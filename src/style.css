@@ -235,15 +235,6 @@ button {
   font-weight: 600;
 }
 
-.placeholder {
-  background: linear-gradient(180deg, #1a221e, var(--forest));
-  color: var(--sand);
-}
-
-.placeholder .card {
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .saved-item {
   width: 100%;
   text-align: left;
@@ -256,4 +247,97 @@ button {
 .saved-item strong {
   display: block;
   margin-bottom: 4px;
+}
+
+.floor {
+  display: grid;
+  gap: 8px;
+}
+
+.floor-title {
+  margin: 8px 0 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 550;
+}
+
+.plot {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(36, 82, 64, 0.08);
+}
+
+.room {
+  min-height: 92px;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+.room-wide {
+  grid-column: 1 / -1;
+}
+
+.room-label {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 550;
+  line-height: 1.1;
+}
+
+.room-note {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.room-living {
+  min-height: 128px;
+  background: #f6ead6;
+}
+
+.room-living .room-label {
+  font-size: 1.8rem;
+}
+
+.room-kitchen {
+  background: #f3d4c4;
+}
+
+.room-bedroom {
+  background: #e5f0e8;
+}
+
+.room-parking {
+  min-height: 78px;
+  background: #d7dfda;
+}
+
+.room-stairs {
+  background: #efe8dc;
+}
+
+.room-balcony {
+  min-height: 78px;
+  background: #d5e6dc;
+}
+
+.spec-details {
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: rgba(255, 250, 243, 0.72);
+}
+
+.spec-details summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.spec-details .json-box {
+  margin-top: 12px;
 }

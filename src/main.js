@@ -3,6 +3,7 @@ import {
   createHouseSpec,
   defaultForm,
   isFormValid,
+  layoutHouse,
   loadSpecs,
   orientations,
   plotLabel,
@@ -35,13 +36,13 @@ function render() {
     bindForm()
     return
   }
-  if (state.screen === 'review') {
-    app.innerHTML = reviewView()
-    bindReview()
+  if (state.screen === 'home' && state.currentSpec) {
+    app.innerHTML = houseView()
+    bindHouse()
     return
   }
-  app.innerHTML = homePlaceholderView()
-  bindPlaceholder()
+  app.innerHTML = landingView()
+  bindLanding()
 }
 
 function landingView() {
@@ -98,7 +99,7 @@ function bindLanding() {
         orientation: spec.orientation || '',
         balcony: Boolean(spec.balcony),
       }
-      setScreen('review')
+      setScreen('home')
     })
   })
 }
@@ -223,7 +224,7 @@ function bindForm() {
   document.querySelector('#continue')?.addEventListener('click', () => {
     if (!isFormValid(state.form)) return
     state.currentSpec = createHouseSpec(state.form)
-    setScreen('review')
+    setScreen('home')
   })
 }
 
@@ -233,50 +234,49 @@ function syncContinue() {
   button.disabled = !isFormValid(state.form)
 }
 
-function reviewView() {
+function houseView() {
   const spec = state.currentSpec
-  if (!spec) return landingView()
+  const floors = layoutHouse(spec)
+    .map(
+      (floor) => `
+      <section class="floor">
+        <h2 class="floor-title">${floor.label}</h2>
+        <div class="plot">
+          ${floor.rooms
+            .map(
+              (room) => `
+            <div class="room room-${room.kind}${room.wide ? ' room-wide' : ''}">
+              <span class="room-label">${room.label}</span>
+              ${room.note ? `<span class="room-note">${room.note}</span>` : ''}
+            </div>
+          `,
+            )
+            .join('')}
+        </div>
+      </section>
+    `,
+    )
+    .join('')
 
   return `
     <main class="screen">
       <div class="screen-narrow stack">
         <button class="back-link" id="back-form" type="button">← Back</button>
-        <h1 class="hero-title" style="font-size:2rem">Your home brief</h1>
-        <p class="lead">Saved as a House Specification — source of truth for later 3D exploration.</p>
-
-        <section class="card stack">
-          ${row('Plot', plotLabel(spec))}
-          ${row('Floors', String(spec.floors))}
-          ${row('Bedrooms', String(spec.bedrooms))}
-          ${row('Parking', spec.parking === 0 ? 'None' : `${spec.parking} car`)}
-          ${row('Family', `${spec.familySize} people`)}
-          ${row('Orientation', spec.orientation || 'Not set')}
-          ${row('Balcony', spec.balcony ? 'Yes' : 'No')}
-          ${row('Status', spec.status)}
-        </section>
-
-        <section class="stack">
-          <span class="label">House Spec JSON</span>
+        <h1 class="hero-title" style="font-size:2rem">Your home</h1>
+        <p class="lead">One version, from the basics you entered.</p>
+        <p class="muted">${plotLabel(spec)} · ${summaryLine(spec)}</p>
+        ${floors}
+        <button class="btn btn-dark" id="save-design" type="button">Save My Design</button>
+        <details class="spec-details">
+          <summary>House Spec JSON</summary>
           <pre class="json-box">${escapeHtml(JSON.stringify(spec, null, 2))}</pre>
-        </section>
-
-        <button class="btn btn-dark" id="enter-home" type="button">Enter This Home</button>
-        <button class="btn btn-secondary" id="save-design" type="button">Save My Design</button>
+        </details>
       </div>
     </main>
   `
 }
 
-function row(label, value) {
-  return `
-    <div class="summary-row">
-      <span>${label}</span>
-      <strong>${value}</strong>
-    </div>
-  `
-}
-
-function bindReview() {
+function bindHouse() {
   document.querySelector('#back-form')?.addEventListener('click', () => setScreen('form'))
 
   document.querySelector('#save-design')?.addEventListener('click', () => {
@@ -284,41 +284,6 @@ function bindReview() {
     state.savedSpecs = saveSpec(state.currentSpec)
     const button = document.querySelector('#save-design')
     if (button) button.textContent = 'Saved'
-  })
-
-  document.querySelector('#enter-home')?.addEventListener('click', () => {
-    if (!state.currentSpec) return
-    state.savedSpecs = saveSpec(state.currentSpec)
-    setScreen('home')
-  })
-}
-
-function homePlaceholderView() {
-  const spec = state.currentSpec
-  return `
-    <main class="screen placeholder">
-      <div class="screen-narrow stack">
-        <p class="brand">3D Home</p>
-        <h1 class="hero-title">Your walkthrough starts here.</h1>
-        <p class="lead">
-          ${spec ? `${plotLabel(spec)} · ${summaryLine(spec)}` : ''}
-        </p>
-        <section class="card stack">
-          ${row('Onboarding', 'Done')}
-          ${row('AI', 'Not in this build')}
-          ${row('3D', 'Next — simple browser walkthrough')}
-        </section>
-        <p class="lead">No AI. No app store build. Just a fast web path we can test today.</p>
-        <button class="btn btn-primary" id="back-home" type="button">Back to Home</button>
-      </div>
-    </main>
-  `
-}
-
-function bindPlaceholder() {
-  document.querySelector('#back-home')?.addEventListener('click', () => {
-    state.savedSpecs = loadSpecs()
-    setScreen('landing')
   })
 }
 
