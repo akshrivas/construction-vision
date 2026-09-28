@@ -1,0 +1,13 @@
+{
+  "id": "spike-1",
+  "plot": { "width": 30, "length": 50 },
+  "floors": 2,
+  "bedrooms": 3,
+  "parking": 1,
+  "familySize": 4,
+  "orientation": "east",
+  "rooms": ["living", "kitchen", "bedroom", "bedroom", "bedroom", "stairs"],
+  "balcony": true,
+  "createdAt": "2026-09-28T00:00:00.000Z",
+  "status": "exploring"
+}
